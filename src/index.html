@@ -14,16 +14,41 @@
                 bpm
             </div>
             <input type="number" id="bpm" value="100" min="20" max="240">
+
+            <div>
+                release
+            </div>
             <input name="release" id="release" type="range" data-control-name="release" min="0" max="10" step="0.1" value="1">
+            <div>
+                attack
+            </div>
+            <input name="attack" id="attack" type="range" data-control-name="attack" min="0" max="2" step="0.05" value="0">
+            <div>
+                decay
+            </div>
+            <input name="decay" id="decay" type="range" data-control-name="decay" min="0" max="5" step="0.1" value="0">
+            <div>
+                sustain
+            </div>
+            <input name="sustain" id="sustain" type="range" data-control-name="sustain" min="1" max="100" value="50">
+            <div class="radio">
+                <label for="instrument-type1">type1</label>
+                <input type="radio" id="instrument-type1" name="instrument" value="type1" checked>
+                <label for="instrument-type2">type2</label>
+                <input type="radio" id="instrument-type2" name="instrument" value="type2">
+                <label for="instrument-type3">type3</label>
+                <input type="radio" id="instrument-type3" name="instrument" value="type3">
+                <label for="instrument-type4">type4</label>
+                <input type="radio" id="instrument-type4" name="instrument" value="type4">
+            </div>
             <textarea name="notes" id="notes" cols="30" rows="10" required></textarea>
             <div id="parserError" class="error">
                 Invalid note format
             </div>
-            <button>play</button>
         </form>
-        <button id="stop">stop</button>
-        <button id="pause">pause</button>
-        <button id="resume">resume</button>
+        <button id="stop" disabled>stop</button>
+        <button id="suspend" disabled>pause</button>
+        <button id="start">start</button>
     </div>
     D3/8 D3/8 A#3/8. A3/16 G3/8 G3/4. A#3/8 A#3/8 C4/8 A#3/8 A3/4. A3/8 A3/8 A3/8 A3/8 A3/8 D4/8 C4/8 A#3/8 A3/8 A#3/4 A#3/8. A#3/16 D4/8 A#3/8
 

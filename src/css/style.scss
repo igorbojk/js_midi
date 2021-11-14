@@ -18,3 +18,16 @@ form {
         display: block;
     }
 }
+
+form {
+    &.disabled {
+        &:hover {
+            cursor: not-allowed;
+        }
+        input,
+        textarea,
+        button {
+            pointer-events: none;
+        }
+    }
+}

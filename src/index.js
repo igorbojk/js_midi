@@ -1,10 +1,5 @@
 import './css/style.scss';
 
-let ctx = null;
-let oscillator = null;
-let oscillatorGain = null;
-let started = false;
-
 const notesField = document.getElementById('notes');
 const bpmField = document.getElementById('bpm');
 
@@ -127,87 +122,24 @@ const frequencies = {
     '_': 0
 };
 
-const pause = {
-    number: 0,
-    time: 4
-};
-
-const ADSR = { attack: 0.5, decay: 1, sustain: 1, release: 0.3 };
-const STAGE_MAX_TIME = 2;
-
-function midiPlayer() {
-    if (!ctx) {
-
-        ctx = new AudioContext() || new webkitAudioCondext();
-        oscillator = ctx.createOscillator();
-        oscillatorGain = ctx.createGain();
-        oscillatorGain.gain.value = 0.05;
-        oscillator.connect(oscillatorGain);
-        oscillatorGain.connect(ctx.destination);
-        // oscillator.connect(ctx.destination);
-        // const now = ctx.currentTime;
-        // const atkDuration = ADSR.attack * STAGE_MAX_TIME;
-        // const atkEndTime = now + atkDuration;
-        // const decayDuration = ADSR.decay * STAGE_MAX_TIME;
-        // console.log(oscillatorGain.gain)
-        // oscillatorGain.gain.setValueAtTime(0, ctx.currentTime);
-        // oscillatorGain.gain.linearRampToValueAtTime(1, atkEndTime);
-        // oscillatorGain.gain.setTargetAtTime(ADSR.sustain, atkEndTime, decayDuration);
-
-
-    }
-    return ctx;
-
-}
-
-
+const ctx = new AudioContext() || new webkitAudioCondext();
+const threshold = 0.001;
+let releaseValue = 1;
 const eps = 0.01;
 
 function play() {
-    midiPlayer();
-    // oscillator.type = 'sawtooth'
-
     if (!notesField.value || !bpmField.value) {
         return;
     }
-
-    let notes = parseNotes(notesField.value);
-
-    if (!started) {
-        oscillator.start();
-        started = true;
-    } else {
-        ctx.resume();
-    }
-    var time = ctx.currentTime + 0.01;
-
-    notes.push(pause);
-
-    notes.forEach(note => {
-        const freq = Math.pow(2, (note.number - 69) / 12) * 440;
-        oscillator.frequency.setValueAtTime(0, time - eps, 0.001);
-        oscillator.frequency.setTargetAtTime(freq, time, 0.001);
-
-        // kick
-
-        oscillator.frequency.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(1, 0);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-        oscillator.connect(gain);
-
-        // end kick
-
-
+    let time = ctx.currentTime + eps;
+    parseNotes(notesField.value).forEach(note => {
+        const freq = note.number !== 0 ? Math.pow(2, (note.number - 69) / 12) * 440 : 0;
         const noteTime = note.isLong ? note.time * 1.5 : note.time;
+        playNote(freq, time, (60 / bpmField.value) * noteTime);
         time += (60 / bpmField.value) * noteTime;
     });
-    oscillator.stop(ctx.currentTime + time - 2)
-        // setTimeout(() => {
-        //     ctx.suspend();
-        // }, time * 300)
-}
+
+};
 
 function parseNotes(notes) {
     const arr = [];
@@ -221,6 +153,22 @@ function parseNotes(notes) {
     });
 
     return arr;
+};
+
+function playNote(freq, startTime = 0, endTime) {
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    const release = ctx.createGain();
+    osc.connect(release);
+    osc.frequency.value = freq;
+    release.connect(ctx.destination);
+    release.gain.setValueAtTime(0.9, startTime);
+    release.gain.exponentialRampToValueAtTime(
+        0.00001,
+        startTime + endTime + Math.max(releaseValue, threshold)
+    );
+    osc.start(startTime);
+    osc.stop(startTime + endTime + Math.max(releaseValue, threshold));
 }
 
 document.addEventListener('submit', function(evt) {
@@ -229,11 +177,7 @@ document.addEventListener('submit', function(evt) {
     play();
 }, true);
 
-document.getElementById('stop').addEventListener('click', function() {
-    if (ctx) {
-        // ctx.suspend();
-        ctx.close();
-        ctx = null;
-        started = false;
-    }
+document.getElementById('stop').addEventListener('click', () => {
+    // console.log(ctx.destination)
+    // gainNode.disconnect(ctx.destination);
 }, true);

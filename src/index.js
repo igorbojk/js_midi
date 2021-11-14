@@ -3,17 +3,18 @@ import { midiNotes } from './const/midiNotes';
 
 const notesField = document.getElementById('notes');
 const bpmField = document.getElementById('bpm');
+const releaseField = document.getElementById('release');
 
 
-const ctx = new AudioContext() || new webkitAudioCondext();
+let ctx;
 const threshold = 0.001;
 let releaseValue = 1;
 const eps = 0.01;
 let parserError = false;
-let isPaused = false;
 let sources = [];
 
 function start() {
+    ctx = new AudioContext() || new webkitAudioCondext()
     if (!notesField.value || !bpmField.value) {
         return;
     }
@@ -84,7 +85,7 @@ document.addEventListener('submit', function(evt) {
 
 document.getElementById('stop').addEventListener('click', function(evt) {
     evt.stopImmediatePropagation();
-    stopAll();
+    ctx.close();
 }, true);
 
 document.getElementById('pause').addEventListener('click', function(evt) {
@@ -95,4 +96,9 @@ document.getElementById('pause').addEventListener('click', function(evt) {
 document.getElementById('resume').addEventListener('click', function(evt) {
     evt.stopImmediatePropagation();
     ctx.resume();
+}, true);
+
+document.getElementById('release').addEventListener('mouseup', function(evt) {
+    evt.stopImmediatePropagation();
+    releaseValue = releaseField.value;
 }, true);

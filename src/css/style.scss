@@ -1,6 +1,6 @@
 @import 'reset-css';
 $primary: teal;
-$red: rgb(201, 0, 0);
+$red: #d91717;
 $darkGray: #394046;
 $gray: #434c51;
 $white: white;
@@ -107,8 +107,8 @@ input[type=range]::-webkit-slider-thumb {
 .error {
     color: $red;
     display: none;
-    font-size: 14px;
     padding: 8px;
+    font-size: 28px;
     &.show {
         display: block;
     }

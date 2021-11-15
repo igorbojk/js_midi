@@ -50,7 +50,6 @@ function start() {
 function playFromArray(array, startTime, source) {
     if (parserError) {
         document.getElementById('parserError').classList.add('show');
-        stop();
         return;
     }
     stopBtn.removeAttribute('disabled');

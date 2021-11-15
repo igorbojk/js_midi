@@ -40,7 +40,7 @@ let timerStopTimeStamp = 0;
 function start() {
     clearTimeout(timer);
     ctx = new AudioContext() || new webkitAudioCondext();
-    if (!bpmField.value || (!textField1.value && !textField1.value)) {
+    if (!bpmField.value || (!textField1.value && !textField2.value)) {
         return;
     }
     document.getElementById('parserError').classList.remove('show');
@@ -91,7 +91,8 @@ function parseNotes(notes) {
             number: midiNotes[number],
             time: 1 / (noteTime / 4),
             isLong: time.includes('.')
-        })
+        });
+        console.log(1 / (noteTime / 4))
     });
     return arr;
 };

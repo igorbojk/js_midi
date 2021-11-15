@@ -75,12 +75,8 @@ function parseNotes(notes) {
     const arr = [];
     notes.trim().split(' ').forEach(el => {
         const [number, time] = el.split('/');
-        if (!number || !time) {
-            parserError = true;
-            return;
-        }
-        const noteTime = +time.replace('.', '');
-        if (midiNotes[number] === undefined || isNaN(noteTime)) {
+        const noteTime = time && +time.replace('.', '');
+        if (midiNotes[number] === undefined || !number || !time || isNaN(noteTime)) {
             parserError = true;
             return;
         }

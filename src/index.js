@@ -33,15 +33,11 @@ let timerStopTimeStamp = 0;
 function start() {
     clearTimeout(timer);
     ctx = new AudioContext() || new webkitAudioCondext();
-    if (!bpmField.value) {
+    if (!bpmField.value || (!textField1.value && !textField1.value)) {
         return;
     }
     document.getElementById('parserError').classList.remove('show');
     stopAll();
-    if (parserError) {
-        document.getElementById('parserError').classList.add('show');
-        return;
-    }
     playFromArray(parseNotes(textField1.value), ctx.currentTime + eps, 'first');
     playFromArray(parseNotes(textField2.value), ctx.currentTime + eps, 'second');
 };
@@ -52,6 +48,13 @@ function start() {
  * @param {string} source 
  */
 function playFromArray(array, startTime, source) {
+    if (parserError) {
+        document.getElementById('parserError').classList.add('show');
+        stop();
+        return;
+    }
+    stopBtn.removeAttribute('disabled');
+    suspendBtn.removeAttribute('disabled');
     let time = startTime;
     array.forEach((note, index) => {
         let freq = note.number !== 0 ? Math.pow(2, (note.number - 69) / 12) * 440 : 0;
@@ -73,17 +76,21 @@ function parseNotes(notes) {
     const arr = [];
     notes.trim().split(' ').forEach(el => {
         const [number, time] = el.split('/');
-        if (midiNotes[number] === undefined) {
+        if (!number || !time) {
+            parserError = true;
+            return;
+        }
+        const noteTime = +time.replace('.', '');
+        if (midiNotes[number] === undefined || isNaN(noteTime)) {
             parserError = true;
             return;
         }
         arr.push({
             number: midiNotes[number],
-            time: 1 / (+(time.replace('.', '')) / 4),
+            time: 1 / (noteTime / 4),
             isLong: time.includes('.')
         })
     });
-
     return arr;
 };
 /**
@@ -199,23 +206,28 @@ function setValuesToFields() {
                 break
             }
     }
+    releaseField.value = releaseValue;
+    attackField.value = attackValue;
+    decayField.value = decayValue;
+    sustainField.value = sustainValue;
 }
 
 startBtn.addEventListener('click', function(evt) {
     evt.stopImmediatePropagation();
+    evt.preventDefault();
     start();
-    stopBtn.removeAttribute('disabled');
-    suspendBtn.removeAttribute('disabled');
 }, true);
 
 stopBtn.addEventListener('click', function(evt) {
     evt.stopImmediatePropagation();
+    evt.preventDefault();
     clearTimeout(timer);
     stop();
 }, true);
 
 suspendBtn.addEventListener('click', function(evt) {
     evt.stopImmediatePropagation();
+    evt.preventDefault();
     clearTimeout(timer);
     if (ctx.state === 'running') {
         ctx.suspend();

@@ -5,58 +5,103 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Road+Rage&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="midi-player">
         <form>
-            <div>
-                bpm
-            </div>
-            <input type="number" id="bpm" value="100" min="20" max="240">
+            <div class="flex-container">
+                <div class="col">
+                    <div class="form-elem">
+                        <label for="bpm">BPM</label>
+                        <input type="number" id="bpm" name="bpm" value="100" min="20" max="240">
+                    </div>
+                    <div class="flex-container">
+                        <div class="col">
+                            <div class="form-elem radio-container">
+                                <div class="radio">
+                                    <input type="radio" id="instrument-type1" name="instrument" value="type1" checked>
+                                    <label for="instrument-type1">TYPE 1</label>
+                                </div>
+                                <div class="radio">
+                                    <input type="radio" id="instrument-type2" name="instrument" value="type2">
+                                    <label for="instrument-type2">TYPE 2</label>
+                                </div>
+                                <div class="radio">
+                                    <input type="radio" id="instrument-type3" name="instrument" value="type3">
+                                    <label for="instrument-type3">TYPE 3</label>
+                                </div>
+                                <div class="radio">
+                                    <input type="radio" id="instrument-type4" name="instrument" value="type4">
+                                    <label for="instrument-type4">TYPE 4</label>
+                                </div>
+                            </div>
 
-            <div>
-                release
+                        </div>
+                        <div class="col">
+                            <div class="form-elem buttons-container">
+                                <button id="stop" disabled>stop</button>
+                                <button id="suspend" disabled>pause</button>
+                                <button id="start">start</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-elem">
+                        <label for="release">
+                            RELEASE
+                        </label>
+                        <input name="release" id="release" type="range" data-control-name="release" min="0" max="10" step="0.1" value="1">
+                    </div>
+                    <div class="form-elem">
+                        <label for="attack">
+                            ATTACK
+                        </label>
+                        <input name="attack" id="attack" type="range" data-control-name="attack" min="0" max="2" step="0.05" value="0">
+                    </div>
+                    <div class="form-elem">
+                        <label for="decay">
+                            DECAY
+                        </label>
+                        <input name="decay" id="decay" type="range" data-control-name="decay" min="0" max="5" step="0.1" value="0">
+                    </div>
+                    <div class="form-elem">
+                        <label for="sustain">
+                            SUSTAIN
+                        </label>
+                        <input name="sustain" id="sustain" type="range" data-control-name="sustain" min="1" max="100" value="50">
+                    </div>
+                </div>
             </div>
-            <input name="release" id="release" type="range" data-control-name="release" min="0" max="10" step="0.1" value="1">
-            <div>
-                attack
+            <div class="flex-container">
+                <div class="col">
+                    <textarea name="text-field-1" id="text-field-1" cols="30" rows="10"></textarea>
+                </div>
+                <div class="col">
+                    <textarea name="text-field-2" id="text-field-2" cols="30" rows="10"></textarea>
+                </div>
             </div>
-            <input name="attack" id="attack" type="range" data-control-name="attack" min="0" max="2" step="0.05" value="0">
-            <div>
-                decay
-            </div>
-            <input name="decay" id="decay" type="range" data-control-name="decay" min="0" max="5" step="0.1" value="0">
-            <div>
-                sustain
-            </div>
-            <input name="sustain" id="sustain" type="range" data-control-name="sustain" min="1" max="100" value="50">
-            <div class="radio">
-                <label for="instrument-type1">type1</label>
-                <input type="radio" id="instrument-type1" name="instrument" value="type1" checked>
-                <label for="instrument-type2">type2</label>
-                <input type="radio" id="instrument-type2" name="instrument" value="type2">
-                <label for="instrument-type3">type3</label>
-                <input type="radio" id="instrument-type3" name="instrument" value="type3">
-                <label for="instrument-type4">type4</label>
-                <input type="radio" id="instrument-type4" name="instrument" value="type4">
-            </div>
-            <textarea name="text-field-1" id="text-field-1" cols="30" rows="10" required></textarea>
-            <textarea name="text-field-2" id="text-field-2" cols="30" rows="10" required></textarea>
             <div id="parserError" class="error">
-                Invalid note format
+                Invalid note format. Pay attention. You must separate notes only with spaces!
             </div>
         </form>
-        <button id="stop" disabled>stop</button>
-        <button id="suspend" disabled>pause</button>
-        <button id="start">start</button>
     </div>
-    D3/8 D3/8 A#3/8. A3/16 G3/8 G3/4. A#3/8 A#3/8 C4/8 A#3/8 A3/4. A3/8 A3/8 A3/8 A3/8 A3/8 D4/8 C4/8 A#3/8 A3/8 A#3/4 A#3/8. A#3/16 D4/8 A#3/8
-
-    <br>
-    <br> E4/4 E4/4 E4/4 D#4/8. A#4/16 E4/4 D#4/8. A#4/16 E4/2 D5/4 D5/4 D5/4 D#5/8. A#4/16 F#4/4 D#4/8. A#4/16 E4/2
-    <br><br> E5/4 B4/8 C5/8 D5/4 C5/8 B4/8 A4/4 A4/8 C5/8 E5/4 D5/8 C5/8 B4/4 B4/8 C5/8 D5/4 E5/4 C5/4 A4/4 A4/4 _/4 D5/3 F5/8 A5/4 G5/8 F5/8 E5/3 C5/8 E5/4 D5/8 C5/8 B4/4 B4/8 C5/8 D5/4 E5/4 C5/4 A4/4 A4/4 _/4
-    <script src="bundle.js"></script>
+    <div class="examples">
+        <h1>Examples:</h3>
+            <p>
+                D3/8 D3/8 A#3/8. A3/16 G3/8 G3/4. A#3/8 A#3/8 C4/8 A#3/8 A3/4. A3/8 A3/8 A3/8 A3/8 A3/8 D4/8 C4/8 A#3/8 A3/8 A#3/4 A#3/8. A#3/16 D4/8 A#3/8
+            </p>
+            <p>
+                E4/4 E4/4 E4/4 D#4/8. A#4/16 E4/4 D#4/8. A#4/16 E4/2 D5/4 D5/4 D5/4 D#5/8. A#4/16 F#4/4 D#4/8. A#4/16 E4/2
+            </p>
+            <p>
+                E5/4 B4/8 C5/8 D5/4 C5/8 B4/8 A4/4 A4/8 C5/8 E5/4 D5/8 C5/8 B4/4 B4/8 C5/8 D5/4 E5/4 C5/4 A4/4 A4/4 _/4 D5/3 F5/8 A5/4 G5/8 F5/8 E5/3 C5/8 E5/4 D5/8 C5/8 B4/4 B4/8 C5/8 D5/4 E5/4 C5/4 A4/4 A4/4 _/4
+            </p>
+    </div>
 <script defer src="bundle.js"></script></body>
 
 </html>

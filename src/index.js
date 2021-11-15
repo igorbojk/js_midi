@@ -5,9 +5,15 @@ const textField1 = document.getElementById('text-field-1');
 const textField2 = document.getElementById('text-field-2');
 const bpmField = document.getElementById('bpm');
 const releaseField = document.getElementById('release');
+const releaseValueField = document.getElementById('release-value');
 const attackField = document.getElementById('attack');
+const attackValueField = document.getElementById('attack-value');
 const decayField = document.getElementById('decay');
+const decayValueField = document.getElementById('decay-value');
 const sustainField = document.getElementById('sustain');
+const sustainValueField = document.getElementById('sustain-value');
+const pitchField = document.getElementById('pitch');
+const pitchValueField = document.getElementById('pitch-value');
 const startBtn = document.getElementById('start');
 const stopBtn = document.getElementById('stop');
 const suspendBtn = document.getElementById('suspend');
@@ -20,6 +26,7 @@ let attackValue = 0;
 let decayValue = 0;
 let sustainValue = 50;
 let instrumentType = 'default';
+let pitchValue = 1;
 let type = 'square';
 let parserError = false;
 let sources = {
@@ -105,7 +112,7 @@ function playNote(freq, startTime = 0, endTime, index, isLast, source) {
 
     sources[source][index] = osc;
     osc.type = type;
-    osc.frequency.value = freq;
+    osc.frequency.value = freq * pitchValue;
     osc.connect(attack);
 
     let time = startTime + threshold;
@@ -205,6 +212,10 @@ function setValuesToFields() {
     attackField.value = attackValue;
     decayField.value = decayValue;
     sustainField.value = sustainValue;
+    releaseValueField.textContent = releaseField.value;
+    attackValueField.textContent = attackField.value;
+    decayValueField.textContent = decayField.value;
+    sustainValueField.textContent = sustainField.value;
 }
 
 startBtn.addEventListener('click', function(evt) {
@@ -238,26 +249,31 @@ suspendBtn.addEventListener('click', function(evt) {
 releaseField.addEventListener('mouseup', function(evt) {
     evt.stopImmediatePropagation();
     releaseValue = +releaseField.value;
+    releaseValueField.textContent = releaseField.value;
 }, true);
 
 attackField.addEventListener('mouseup', function(evt) {
     evt.stopImmediatePropagation();
     attackValue = +attackField.value;
+    attackValueField.textContent = attackField.value;
 }, true);
 
 decayField.addEventListener('mouseup', function(evt) {
     evt.stopImmediatePropagation();
     decayValue = +decayField.value;
+    decayValueField.textContent = decayField.value;
 }, true);
 
 sustainField.addEventListener('mouseup', function(evt) {
     evt.stopImmediatePropagation();
     sustainValue = +sustainField.value;
+    sustainValueField.textContent = sustainField.value;
 }, true);
 
-sustainField.addEventListener('mouseup', function(evt) {
+pitchField.addEventListener('mouseup', function(evt) {
     evt.stopImmediatePropagation();
-    sustainValue = +sustainField.value;
+    pitchValue = +pitchField.value;
+    pitchValueField.textContent = pitchField.value;
 }, true);
 
 document.getElementsByName('instrument').forEach(el => {

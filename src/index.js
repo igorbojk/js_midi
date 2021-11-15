@@ -1,7 +1,8 @@
 import './css/style.scss';
 import { midiNotes } from './const/midiNotes';
 
-const notesField = document.getElementById('notes');
+const textField1 = document.getElementById('text-field-1');
+const textField2 = document.getElementById('text-field-2');
 const bpmField = document.getElementById('bpm');
 const releaseField = document.getElementById('release');
 const attackField = document.getElementById('attack');
@@ -21,33 +22,53 @@ let sustainValue = 50;
 let instrumentType = 'default';
 let type = 'square';
 let parserError = false;
-let sources = [];
+let sources = {
+    first: [],
+    second: []
+};
 let timer = null;
+let timerStopTime = 0;
+let timerStopTimeStamp = 0;
 
 function start() {
     clearTimeout(timer);
     ctx = new AudioContext() || new webkitAudioCondext();
-    if (!notesField.value || !bpmField.value) {
+    if (!bpmField.value) {
         return;
     }
     document.getElementById('parserError').classList.remove('show');
-    let time = ctx.currentTime + eps;
-    const notes = parseNotes(notesField.value);
     stopAll();
     if (parserError) {
         document.getElementById('parserError').classList.add('show');
         return;
     }
-    notes.forEach((note, index) => {
-        let freq = note.number !== 0 ? Math.pow(2, (note.number - 69) / 12) * 440 : 0;
-        const noteTime = note.isLong ? note.time * 1.5 : note.time;
-        playNote(freq, time, (60 / bpmField.value) * noteTime, index, index === notes.length - 1);
-        time += (60 / bpmField.value) * noteTime;
-    });
-
+    playFromArray(parseNotes(textField1.value), ctx.currentTime + eps, 'first');
+    playFromArray(parseNotes(textField2.value), ctx.currentTime + eps, 'second');
 };
 
+/**
+ * @param {Array[sting]} array 
+ * @param {number} startTime 
+ * @param {string} source 
+ */
+function playFromArray(array, startTime, source) {
+    let time = startTime;
+    array.forEach((note, index) => {
+        let freq = note.number !== 0 ? Math.pow(2, (note.number - 69) / 12) * 440 : 0;
+        const noteTime = note.isLong ? note.time * 1.5 : note.time;
+        playNote(freq, time, (60 / bpmField.value) * noteTime, index, index === array.length - 1, source);
+        time += (60 / bpmField.value) * noteTime;
+    });
+}
+
+/**
+ * @param {string} notes 
+ * @returns {array}
+ */
 function parseNotes(notes) {
+    if (!notes) {
+        return [];
+    }
     parserError = false;
     const arr = [];
     notes.trim().split(' ').forEach(el => {
@@ -65,14 +86,22 @@ function parseNotes(notes) {
 
     return arr;
 };
-
-function playNote(freq, startTime = 0, endTime, index, isLast) {
+/**
+ * 
+ * @param {number} freq 
+ * @param {number} startTime 
+ * @param {number} endTime 
+ * @param {number} index 
+ * @param {boolean} isLast 
+ * @param {sting} source 
+ */
+function playNote(freq, startTime = 0, endTime, index, isLast, source) {
     const osc = ctx.createOscillator();
     const release = ctx.createGain();
     const attack = ctx.createGain();
     const decay = ctx.createGain();
 
-    sources[index] = osc;
+    sources[source][index] = osc;
     osc.type = type;
     osc.frequency.value = freq;
     osc.connect(attack);
@@ -104,15 +133,17 @@ function playNote(freq, startTime = 0, endTime, index, isLast) {
     osc.start(startTime);
     osc.stop(stopTime);
     if (isLast) {
-        timer = setTimeout(() => {
-            stop();
-        }, stopTime * 1000)
+        clearTimeout(timer);
+        timerStopTime = Math.max(timerStopTime, stopTime);
+        setupTimer();
     }
 };
 
 function stopAll() {
-    sources.forEach(el => el.stop());
-    sources = [];
+    Object.keys(sources).forEach(key => {
+        sources[key].forEach(el => el.stop());
+        sources[key] = [];
+    });
 };
 
 function stop() {
@@ -122,14 +153,21 @@ function stop() {
     suspendBtn.textContent = 'pause';
 }
 
+function setupTimer() {
+    timerStopTimeStamp = Date.now() + (timerStopTime * 1000);
+    timer = setTimeout(() => {
+        stop();
+    }, timerStopTime * 1000);
+}
+
 function setValuesToFields() {
     switch (instrumentType) {
         case 'type1':
             {
                 type = 'square';
-                releaseValue = 1;
-                attackValue = 0;
+                releaseValue = 4;
                 decayValue = 0;
+                attackValue = 0.1;
                 sustainValue = 50;
                 break
             }
@@ -181,10 +219,12 @@ suspendBtn.addEventListener('click', function(evt) {
     clearTimeout(timer);
     if (ctx.state === 'running') {
         ctx.suspend();
+        timerStopTime = (timerStopTimeStamp - Date.now()) / 1000;
         suspendBtn.textContent = 'resume';
     } else {
         ctx.resume();
         suspendBtn.textContent = 'pause';
+        setupTimer();
     }
 }, true);
 

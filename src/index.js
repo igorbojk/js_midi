@@ -89,10 +89,9 @@ function parseNotes(notes) {
         }
         arr.push({
             number: midiNotes[number],
-            time: 1 / (noteTime / 4),
+            time: 4 / noteTime,
             isLong: time.includes('.')
         });
-        console.log(1 / (noteTime / 4))
     });
     return arr;
 };
